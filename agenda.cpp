@@ -5,9 +5,9 @@ using namespace std;
 
 struct user
 {
-	char lastName[20];
-	char name[20];
-	char number[15];
+	string lastName;
+	string name;
+	string number;
 };
 
 class agenda
@@ -50,6 +50,10 @@ public:
 	agenda(string path)
 	{
 		filePath = path;
+		if (checkIfExist())
+		{
+			createFile();
+		}
 	}
 
 	void getUsers()
@@ -66,6 +70,23 @@ public:
 		fstream file(filePath.c_str(), ios::app | ios::binary);
 		file.write((char *)&u, sizeof(user));
 		file.close();
+	}
+
+	void title()
+	{
+		cout << "agenda file binari - Vanoncini Davide"
+	}
+
+	int homeMenu()
+	{
+		string selectionS;
+		cout << "seleziona un azione:" << endl;
+		cout << "1] aggiungi contatto" << endl;
+		cout << "2] cerca un contatto" << endl;
+		cout << "3] visualizza la rubirca" << endl;
+		cout << "4] modifica un contatto" << endl;
+		cout << "5] elimina un contatto" << endl;
+		cout << "6] esci dal programma" << endl;
 	}
 };
 
