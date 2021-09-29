@@ -1,12 +1,18 @@
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <cstring>
 using namespace std;
 
-struct user {
-    string lastName;
-    string name;
-    string number;
+// struct user {
+//     string lastName;
+//     string name;
+//     string number;
+// }
+struct user
+{
+	char lastName[20];
+	char name[20];
+	char number[13];
 };
 
 class addrBook {
@@ -171,6 +177,132 @@ public:
         cout << "error adding to file" << endl;
         return true;
     }
+	//constructor
+	addrBook(string path)
+	{
+		filePath = path;
+		if (checkIfExist())
+			if (!createFile())
+			{
+				cout << "file not created, error occurred";
+				exit(1);
+			}
+	}
+
+	//promt on console all the possible functions the user can select,
+	//if showTitle is true the function will promt the title of the application
+	int homeMenu(bool showTitle)
+	{
+		string selectionS = "";
+		bool repeat = false;
+		do
+		{
+			clear();
+			if (repeat)
+				cout << "puoi selezionare solo 1,2,3,4,5,6." << endl;
+			else
+			{
+				if (showTitle)
+					title();
+				cout << "seleziona un azione:" << endl;
+			}
+			cout << "1] aggiungi contatto" << endl;
+			cout << "2] cerca un contatto" << endl;
+			cout << "3] visualizza la rubrica" << endl;
+			cout << "4] modifica un contatto" << endl;
+			cout << "5] elimina un contatto" << endl;
+			cout << "6] esci dal programma" << endl;
+			getline(cin, selectionS);
+			repeat = true;
+		} while (selectionS != "1" && selectionS != "2" && selectionS != "3" && selectionS != "4" && selectionS != "5" && selectionS != "6");
+		return stoi(selectionS);
+	}
+
+	//print all the users in the addrBook
+	void functionHandler(int selected)
+	{
+		if (selected < 1 || selected > 6)
+			return;
+		switch (selected)
+		{
+		case 1:
+			addUser();
+		case 2:
+			// searchUser();
+		case 3:
+			printUsers();
+		case 4:
+			// updateUser();
+		case 5:
+			// deleteUser();
+		case 6:
+			exit(1);
+		}
+	}
+
+	void printUsers()
+	{
+		user u;
+		fstream file(filePath.c_str(), ios::in | ios::binary); //apre il file binario in LETTURA
+		if (!file)
+		{
+			cout << "Cannot open file!" << endl;
+			return;
+		}
+		//    fileBinario.seekg((pos - 1) * sizeof(int), ios::beg); //si posiziona per leggere il centesimo intero
+		//    fileBinario.read((char *)&n, sizeof(n)); //legge il centesimo intero
+		//    fileBinario.close();
+		while (file.good())
+		{
+			file.read((char *)&u, sizeof(user));
+			printUser(u);
+		}
+	}
+
+	//get user's info and add the user to the file
+	bool addUser()
+	{
+		user u;
+		string name, lastName, number = "";
+		clear();
+		do
+		{
+			cout << "AGGIUNGI UN NUOVO UTENTE" << endl;
+			cout << "nome (max 19 caratteri)               > ";
+			cin >> name;
+			cout << "cognome (max 19 caratteri)            > ";
+			cin >> lastName;
+			cout << "numero di telefono (max 12 caratteri) > ";
+			cin >> number;
+		} while (name.length() > 20 && lastName.length() > 20 && number.length() > 13);
+		// u.name = name.c_str();
+		strcpy(u.name, name.c_str());
+		strcpy(u.lastName, lastName.c_str());
+		strcpy(u.number, number.c_str());
+
+		for (int i = 0; i < sizeof(u.name) / sizeof(u.name[0]); i++)
+		{
+			cout << name[i];
+		}
+
+		for (int i = 0; i < sizeof(u.lastName) / sizeof(u.lastName[0]); i++)
+		{
+			cout << lastName[i];
+		}
+
+		for (int i = 0; i < sizeof(u.number) / sizeof(u.number[0]); i++)
+		{
+			cout << number[i];
+		}
+
+		if (writeUser(u))
+		{
+			cout << "added successfully" << endl;
+			return false;
+		}
+		cout << "error adding to file" << endl;
+		return true;
+	}
 };
 
 int main()
